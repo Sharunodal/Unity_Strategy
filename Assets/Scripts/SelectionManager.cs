@@ -46,6 +46,11 @@ public class SelectionManager : MonoBehaviour
         SelectionChanged?.Invoke();
     }
 
+    public bool IsSelected(Selectable selectable)
+    {
+        return selected.Contains(selectable);
+    }
+
     public IEnumerable<UnitCommandReceiver> GetSelectedCommandReceivers()
     {
         // Remove destroyed selectables first

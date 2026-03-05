@@ -1,10 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BuildingInterior : MonoBehaviour
+public class BuildingInteriorTrigger : MonoBehaviour
 {
     private readonly HashSet<Unit> inside = new();
-    public bool IsInside(Unit u) => u != null && inside.Contains(u);
+    public bool IsInside(Unit unit)
+    {
+        if (unit != null && inside.Contains(unit))
+            return true;
+        return false;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
