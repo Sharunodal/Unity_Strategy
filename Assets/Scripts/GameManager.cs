@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private InputAction pauseAction;
 
     private Unit observedUnit;
+    public Unit ObservedUnit => observedUnit;
 
     public bool isGameActive = true;
     public bool paused = false;

@@ -368,11 +368,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &116264521 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5600291595863043808, guid: cc2c1cba361d8134fb667dc6f30c5f45, type: 3}
-  m_PrefabInstance: {fileID: 5932852944376913373}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &128346785
 GameObject:
   m_ObjectHideFlags: 0
@@ -8331,7 +8326,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeeThroughWindow
   cam: {fileID: 330585545}
-  target: {fileID: 116264521}
+  gameManager: {fileID: 1446342568}
+  selectionManager: {fileID: 1446342565}
+  interiorTrigger: {fileID: 1259562321}
   occluders:
   - {fileID: 721440918}
   - {fileID: 201967506}
@@ -8342,6 +8339,10 @@ MonoBehaviour:
   - {fileID: 1357621712}
   - {fileID: 1280366066}
   - {fileID: 1352313233}
+  requiredLineOfSightBlock: 1
+  occluderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   holeRadius: 0.15
   holeSoftness: 0.05
 --- !u!1 &1628609730
