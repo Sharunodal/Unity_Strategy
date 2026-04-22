@@ -2,6 +2,9 @@
 
 A compact Unity prototype combining RTS-style unit selection and commands with close-quarters melee and ranged combat. The repository contains modular C# systems, scene and editor assets, and animation logic so the project can be inspected and extended within the Unity Editor.
 
+Short video showcasing a very early build:  
+https://youtu.be/PGyfiiHAIVM
+
 ## Key systems and features
 - Unit selection and command routing via `SelectionManager` and `UnitCommandReceiver`.
 - Unit AI and command execution (`UnitBrain`, `IUnitCommand`, `MoveCommand`, `AttackCommand`, `FollowCommand`).
