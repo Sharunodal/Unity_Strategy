@@ -4,6 +4,7 @@ using UnityEngine;
 public class EnemyUnitAI : MonoBehaviour
 {
     [SerializeField] private float senseRadius = 12f;
+    [SerializeField] private float assistRadius = 12f;
     [SerializeField] private float thinkInterval = 0.25f;
     [SerializeField] private LayerMask unitLayer;
 
@@ -19,12 +20,50 @@ public class EnemyUnitAI : MonoBehaviour
         brain = GetComponent<UnitBrain>();
     }
 
+    private void OnEnable()
+    {
+        self.Damaged += OnDamaged;
+    }
+
+    private void OnDisable()
+    {
+        self.Damaged -= OnDamaged;
+    }
+
     private void Update()
     {
         if (Time.time < nextThinkTime)
             return;
         nextThinkTime = Time.time + thinkInterval;
         Think();
+    }
+
+    private void OnDamaged(Unit damagedUnit, Unit attacker)
+    {
+        if (attacker == null || attacker.ownerId == self.ownerId || attacker.currentHitpoints <= 0)
+            return;
+
+        if (currentTarget == null || currentTarget.currentHitpoints <= 0)
+        {
+            currentTarget = attacker;
+            brain.SetCommand(new AttackCommand(currentTarget));
+        }
+
+        Collider[] allies = Physics.OverlapSphere(transform.position, assistRadius, unitLayer);
+        foreach (var allyCollider in allies)
+        {
+            var allyUnit = allyCollider.GetComponent<Unit>();
+            if (allyUnit == null || allyUnit == self || allyUnit.ownerId != self.ownerId)
+                continue;
+
+            var allyAI = allyUnit.GetComponent<EnemyUnitAI>();
+            if (allyAI == null)
+            {
+                continue;
+            }
+
+            allyAI.TryAssistAgainst(attacker);
+        }
     }
 
     private void Think()
@@ -76,5 +115,18 @@ public class EnemyUnitAI : MonoBehaviour
         float lowHpScore = 1f - hpScore;
 
         return distanceScore * 2.0f + lowHpScore * 1.5f;
+    }
+
+    public void TryAssistAgainst(Unit target)
+    {
+        if (target == null || target.currentHitpoints <= 0 || target.ownerId == self.ownerId)
+            return;
+
+        Unit activeTarget = brain.GetAttackTarget();
+        if (activeTarget != null && activeTarget.currentHitpoints > 0)
+            return;
+
+        currentTarget = target;
+        brain.SetCommand(new AttackCommand(currentTarget));
     }
 }

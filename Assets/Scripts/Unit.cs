@@ -19,6 +19,7 @@ public class Unit : MonoBehaviour
     public float runSpeed = 7.0f;
 
     public event Action statsChanged;
+    public event Action<Unit, Unit> Damaged;
 
     [SerializeField] private WeaponType weapon = WeaponType.Sword;
     [SerializeField] private GameObject sword;
@@ -79,7 +80,14 @@ public class Unit : MonoBehaviour
 
     public void TakeDamage(float damage, Unit attacker)
     {
+        float previousHitpoints = currentHitpoints;
         SetHitpoints(currentHitpoints - damage);
+
+        if (attacker != null && currentHitpoints < previousHitpoints)
+        {
+            Damaged?.Invoke(this, attacker);
+        }
+
         if (currentHitpoints <= 0f)
         {
             GetKnockedOut();
