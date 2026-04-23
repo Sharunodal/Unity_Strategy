@@ -123,6 +123,13 @@ public class UnitBrain : MonoBehaviour
         return blockToggled;
     }
 
+    public void SetWeapon(WeaponType weaponType)
+    {
+        if (self == null)
+            return;
+        self.EquipWeapon(weaponType);
+    }
+
     public void ApplySpeed()
     {
         bool canRun = self.currentStamina >= self.minStaminaToRun;

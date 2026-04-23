@@ -821,6 +821,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1072592948343641070, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 00843d8a726aeab43bec82ce9ddc942b, type: 2}
     - target: {fileID: 4873333980671374931, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
       propertyPath: m_Name
       value: EnemyUnit (2)
@@ -1328,7 +1332,7 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 410087039}
   m_Enabled: 1
-  serializedVersion: 12
+  serializedVersion: 13
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 2
@@ -1380,7 +1384,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShadowRadius: 0
+  m_ShapeRadius: 0
   m_ShadowAngle: 0
   m_LightUnit: 1
   m_LuxAtDistance: 1
@@ -4127,6 +4131,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1072592948343641070, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 00843d8a726aeab43bec82ce9ddc942b, type: 2}
     - target: {fileID: 4873333980671374931, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
       propertyPath: m_Name
       value: EnemyUnit (1)
@@ -5261,6 +5269,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
+  m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -6871,6 +6880,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 842447808776147431, guid: cc2c1cba361d8134fb667dc6f30c5f45, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b9a4457c90306e42873e672dee1972c, type: 2}
     - target: {fileID: 5112688543737967706, guid: cc2c1cba361d8134fb667dc6f30c5f45, type: 3}
       propertyPath: m_Name
       value: Unit
@@ -6928,6 +6941,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1072592948343641070, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 00843d8a726aeab43bec82ce9ddc942b, type: 2}
     - target: {fileID: 4873333980671374931, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
       propertyPath: m_Name
       value: EnemyUnit

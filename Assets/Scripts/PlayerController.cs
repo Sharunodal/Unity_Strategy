@@ -141,11 +141,12 @@ public class PlayerController : MonoBehaviour
         foreach (var s in selection.Selected)
         {
             var u = s.GetComponent<Unit>();
-            if (u == null)
+            var brain = s.GetComponent<UnitBrain>();
+            if (u == null || brain == null)
                 continue;
             if (u.ownerId != localPlayerId)
                 continue;
-            u.EquipWeapon(WeaponType.Sword);
+            brain.SetWeapon(WeaponType.Sword);
         }
     }
 
@@ -154,11 +155,12 @@ public class PlayerController : MonoBehaviour
         foreach (var s in selection.Selected)
         {
             var u = s.GetComponent<Unit>();
-            if (u == null)
+            var brain = s.GetComponent<UnitBrain>();
+            if (u == null || brain == null)
                 continue;
             if (u.ownerId != localPlayerId)
                 continue;
-            u.EquipWeapon(WeaponType.Bow);
+            brain.SetWeapon(WeaponType.Bow);
         }
     }
 

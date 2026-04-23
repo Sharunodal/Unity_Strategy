@@ -2,12 +2,10 @@ using UnityEngine;
 
 public class UnitCommandReceiver : MonoBehaviour
 {
-    private Unit unit;
     private UnitBrain brain;
 
     private void Awake()
     {
-        unit = GetComponent<Unit>();
         brain = GetComponent<UnitBrain>();
     }
 
@@ -18,7 +16,7 @@ public class UnitCommandReceiver : MonoBehaviour
 
     public void SetWeapon(WeaponType weaponType)
     {
-        unit.EquipWeapon(weaponType);
+        brain.SetWeapon(weaponType);
     }
 
     public void ToggleRun()
