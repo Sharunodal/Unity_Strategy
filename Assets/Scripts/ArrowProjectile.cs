@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ArrowProjectile : MonoBehaviour
 {
-    [SerializeField] private float damage = 10f;
+    [SerializeField] private float damage = 30f;
     [SerializeField] private float lifeSeconds = 12f;
 
     [SerializeField] private bool stickOnHit = true;
@@ -13,10 +13,9 @@ public class ArrowProjectile : MonoBehaviour
     private Unit owner;
     private bool hasHit;
 
-    public void Init(Unit ownerUnit, float dmg)
+    public void Init(Unit ownerUnit)
     {
         owner = ownerUnit;
-        damage = dmg;
     }
 
     private void Awake()

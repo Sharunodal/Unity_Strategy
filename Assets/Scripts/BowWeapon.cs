@@ -83,7 +83,7 @@ public class BowWeapon : MonoBehaviour
         var go = Instantiate(arrowPrefab, start, rotation);
 
         if (go.TryGetComponent<ArrowProjectile>(out var proj))
-            proj.Init(GetComponentInParent<Unit>(), GetComponentInParent<Unit>().attackDamage);
+            proj.Init(GetComponentInParent<Unit>());
 
         if (go.TryGetComponent<Rigidbody>(out var rb))
             rb.linearVelocity = v0;

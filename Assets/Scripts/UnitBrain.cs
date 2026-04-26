@@ -7,7 +7,6 @@ public enum UnitState { Idle, Moving, Attacking, RangeAttacking, Following, Bloc
 public class UnitBrain : MonoBehaviour
 {
     [SerializeField] private float meleeRange = 3.0f;
-    [SerializeField] private float attacksPerSecond = 1.0f;
     [SerializeField] private float followDistance = 1.5f;
     [SerializeField] private float staminaDrainRunning = 10f;
     [SerializeField] private float staminaRegen = 5f;
@@ -15,30 +14,32 @@ public class UnitBrain : MonoBehaviour
     [SerializeField] private float meleeFacingAngle = 12f;
 
     [SerializeField] private float bowRange = 15f;
-    [SerializeField] private float shotsPerSecond = 0.8f;
     [SerializeField] private float bowFacingAngle = 8f;
 
     private NavMeshAgent agent;
     private IUnitCommand currentCommand;
 
     private Unit self;
+    private UnitAnimator unitAnimator;
+    private WeaponHitbox weaponHitbox;
     private Unit attackTarget;
     private Unit followTarget;
 
     private bool runToggled = false;
     private bool blockToggled = false;
+    [SerializeField] private bool autoComboToggled = false;
     private BlockController blockController;
 
     public event Action AttackTriggered;
-    private float nextSwingTime = 0f;
+    private bool attackRequested;
 
     public event Action RangedTriggered;
-    private float nextShotTime = 0f;
 
     private bool hasPendingCommand;
     private IUnitCommand pendingCommand;
     private Unit pendingAttackTarget;
     private Unit pendingFollowTarget;
+    private bool pendingCommandWasIssuedWhileBlocking;
 
     [SerializeField] private UnitState state = UnitState.Idle;
 
@@ -56,6 +57,8 @@ public class UnitBrain : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         self = GetComponent<Unit>();
+        unitAnimator = GetComponent<UnitAnimator>();
+        weaponHitbox = GetComponentInChildren<WeaponHitbox>();
         blockController = GetComponent<BlockController>();
         ApplySpeed();
     }
@@ -82,6 +85,9 @@ public class UnitBrain : MonoBehaviour
             pendingCommand = currentCommand;
             pendingAttackTarget = attackTarget;
             pendingFollowTarget = followTarget;
+            pendingCommandWasIssuedWhileBlocking = false;
+
+            InterruptCurrentAttackAction();
 
             StopAll();
             return;
@@ -93,12 +99,17 @@ public class UnitBrain : MonoBehaviour
             if (hasPendingCommand)
             {
                 hasPendingCommand = false;
+                bool commandWasIssuedWhileBlocking = pendingCommandWasIssuedWhileBlocking;
+                pendingCommandWasIssuedWhileBlocking = false;
 
                 // Rebuild references
                 if (pendingCommand is AttackCommand)
                 {
                     if (pendingAttackTarget != null)
-                        ExecuteCommand(new AttackCommand(pendingAttackTarget));
+                    {
+                        bool shouldRequestAttack = commandWasIssuedWhileBlocking || autoComboToggled;
+                        ExecuteCommand(new AttackCommand(pendingAttackTarget), shouldRequestAttack);
+                    }
                 }
                 else if (pendingCommand is FollowCommand)
                 {
@@ -123,11 +134,58 @@ public class UnitBrain : MonoBehaviour
         return blockToggled;
     }
 
+    public void SetAutoComboToggled(bool enabled)
+    {
+        autoComboToggled = enabled;
+    }
+
+    public bool GetAutoComboToggled()
+    {
+        return autoComboToggled;
+    }
+
+    public void RequestAttack()
+    {
+        if (blockToggled)
+        {
+            Unit target = GetBlockingAttackTarget();
+            if (target == null || target == self || target.currentHitpoints <= 0f)
+                return;
+
+            StopBlockingForImmediateAttack();
+            ExecuteCommand(new AttackCommand(target));
+            return;
+        }
+
+        if (attackTarget == null || attackTarget == self || attackTarget.currentHitpoints <= 0f)
+            return;
+
+        attackRequested = true;
+        TryTriggerAttackRequest();
+    }
+
     public void SetWeapon(WeaponType weaponType)
     {
         if (self == null)
             return;
+
+        if (self.Weapon == weaponType)
+            return;
+
+        bool shouldResumeAttack = currentCommand is AttackCommand
+            && attackTarget != null
+            && attackTarget != self
+            && attackTarget.currentHitpoints > 0f;
+
+        InterruptCurrentAttackAction();
+
         self.EquipWeapon(weaponType);
+
+        if (shouldResumeAttack)
+        {
+            agent.stoppingDistance = self.IsRanged ? bowRange : meleeRange;
+            RequestAttack();
+        }
     }
 
     public void ApplySpeed()
@@ -156,7 +214,7 @@ public class UnitBrain : MonoBehaviour
         }
     }
 
-    private void ExecuteCommand(IUnitCommand command)
+    private void ExecuteCommand(IUnitCommand command, bool requestAttackOnAttackCommand = true)
     {
         currentCommand = command;
 
@@ -165,6 +223,7 @@ public class UnitBrain : MonoBehaviour
 
         if (command is MoveCommand move)
         {
+            attackRequested = false;
             agent.isStopped = false;
             agent.stoppingDistance = 0f;
             agent.SetDestination(move.Destination);
@@ -184,8 +243,13 @@ public class UnitBrain : MonoBehaviour
                 return;
             }
 
+            if (requestAttackOnAttackCommand)
+                RequestAttack();
+            else
+                attackRequested = false;
+
             agent.isStopped = false;
-            agent.stoppingDistance = meleeRange;
+            agent.stoppingDistance = self.IsRanged ? bowRange : meleeRange;
             agent.SetDestination(attackTarget.transform.position);
             state = UnitState.Moving;
             return;
@@ -193,6 +257,7 @@ public class UnitBrain : MonoBehaviour
 
         if (command is FollowCommand follow)
         {
+            attackRequested = false;
             followTarget = follow.Target;
 
             if (followTarget == null || followTarget == self)
@@ -218,11 +283,32 @@ public class UnitBrain : MonoBehaviour
     {
         if (blockToggled)
         {
+            // Allow breaking block and attacking immediately without having to toggle block off manually
+            if (command is AttackCommand attack)
+            {
+                // If the new attack target is the same as the one while blocking, break block
+                if (attack.Target == GetBlockingAttackTarget())
+                {
+                    StopBlockingForImmediateAttack();
+                    ExecuteCommand(new AttackCommand(attack.Target));
+                    return;
+                }
+
+                // Otherwise, queue the new command and face the target while still blocking
+                hasPendingCommand = true;
+                pendingCommand = new AttackCommand(attack.Target);
+                pendingAttackTarget = attack.Target;
+                pendingFollowTarget = null;
+                pendingCommandWasIssuedWhileBlocking = false;
+                return;
+            }
+
             // Queue the latest command to run after block ends
             hasPendingCommand = true;
             pendingCommand = command;
             pendingAttackTarget = (command is AttackCommand a) ? a.Target : null;
             pendingFollowTarget = (command is FollowCommand f) ? f.Target : null;
+            pendingCommandWasIssuedWhileBlocking = true;
             return;
         }
 
@@ -298,10 +384,11 @@ public class UnitBrain : MonoBehaviour
 
         if (attackTarget != null)
         {
-            if (attackTarget == self)
+            if (attackTarget == self || attackTarget.currentHitpoints <= 0f)
             {
                 currentCommand = null;
                 attackTarget = null;
+                attackRequested = false;
                 state = UnitState.Idle;
                 return;
             }
@@ -324,22 +411,10 @@ public class UnitBrain : MonoBehaviour
                 if (!facing)
                     return;
 
-                float attackRate = hasBow ? shotsPerSecond : attacksPerSecond;
-                float interval = 1f / Mathf.Max(0.01f, attackRate);
-                float nextAttackTime = hasBow ? nextShotTime : nextSwingTime;
-                if (Time.time >= nextAttackTime)
-                {
-                    if (hasBow)
-                    {
-                        nextShotTime = Time.time + interval;
-                        RangedTriggered?.Invoke();
-                    }
-                    else
-                    {
-                        nextSwingTime = Time.time + interval;
-                        AttackTriggered?.Invoke();
-                    }
-                }
+                if (autoComboToggled && !attackRequested && (unitAnimator == null || !unitAnimator.HasActiveAction))
+                    RequestAttack();
+
+                TryTriggerAttackRequest();
             }
             else
             {
@@ -377,11 +452,79 @@ public class UnitBrain : MonoBehaviour
         currentCommand = null;
         attackTarget = null;
         followTarget = null;
+        attackRequested = false;
 
         // Pending command is not cleared for now, as we want to be able to resume it after blocking
 
         agent.isStopped = true;
         agent.ResetPath();
         state = UnitState.Idle;
+    }
+
+    private void StopBlockingForImmediateAttack()
+    {
+        blockToggled = false;
+        hasPendingCommand = false;
+        pendingCommandWasIssuedWhileBlocking = false;
+
+        if (blockController != null)
+            blockController.SetBlocking(false);
+
+        agent.isStopped = false;
+    }
+
+    private Unit GetBlockingAttackTarget()
+    {
+        if (hasPendingCommand && pendingCommand is AttackCommand)
+            return pendingAttackTarget;
+
+        return attackTarget;
+    }
+
+    private void InterruptCurrentAttackAction()
+    {
+        attackRequested = false;
+        unitAnimator?.InterruptCurrentAction();
+        weaponHitbox?.DisableHitbox();
+    }
+
+    private bool TryTriggerAttackRequest()
+    {
+        if (!attackRequested || self == null)
+            return false;
+
+        if (attackTarget == null || attackTarget == self || attackTarget.currentHitpoints <= 0f)
+            return false;
+
+        bool hasBow = self.IsRanged;
+        float attackRange = hasBow ? bowRange : meleeRange + 0.25f;
+        float distanceToTarget = Vector3.Distance(transform.position, attackTarget.transform.position);
+        if (distanceToTarget > attackRange)
+            return false;
+
+        float facingAngle = hasBow ? bowFacingAngle : meleeFacingAngle;
+        if (!IsFacingTarget(attackTarget.transform.position, facingAngle))
+            return false;
+
+        attackRequested = false;
+
+        if (hasBow)
+            RangedTriggered?.Invoke();
+        else
+            AttackTriggered?.Invoke();
+
+        return true;
+    }
+
+    private bool IsFacingTarget(Vector3 targetPos, float facingAngle)
+    {
+        Vector3 dir = targetPos - transform.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude < 0.0001f)
+            return true;
+
+        float angle = Vector3.Angle(transform.forward, dir.normalized);
+        return angle <= facingAngle;
     }
 }

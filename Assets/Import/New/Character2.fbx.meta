@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 667a66a4500acc64499ee35101a23004
+guid: 69aa188058293fd47b7ec0171e5ceeef
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -118,6 +118,120 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
+      name: Attack_Sword_Still
+      takeName: Attack_Sword_Still
+      internalID: 1829829090151437924
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.44702026
+        functionName: EnableWeaponHitbox
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.89850134
+        functionName: DisableWeaponHitbox
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 1
+        functionName: FinishAttack
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.96437657
+        functionName: TryContinueQueuedAttack
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Attack_Sword_Still_2
+      takeName: Attack_Sword_Still_2
+      internalID: -1438447520580231543
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.39162633
+        functionName: EnableWeaponHitbox
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.86815673
+        functionName: DisableWeaponHitbox
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.99872774
+        functionName: FinishAttack
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.9312977
+        functionName: TryContinueQueuedAttack
+        data: 
+        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
       name: metarig.001|Aim Bow
       takeName: metarig.001|Aim Bow
       internalID: 103227488759354290
@@ -150,6 +264,64 @@ ModelImporter:
       name: metarig.001|Attack
       takeName: metarig.001|Attack
       internalID: 2171023570625176279
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: metarig.001|Attack_Sword_Still
+      takeName: metarig.001|Attack_Sword_Still
+      internalID: -5631998267630888965
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: metarig.001|Attack_Sword_Still_2
+      takeName: metarig.001|Attack_Sword_Still_2
+      internalID: -8720180039381845605
       firstFrame: 0
       lastFrame: 15
       wrapMode: 0
@@ -216,7 +388,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -257,28 +429,7 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events:
-      - time: 0.6938776
-        functionName: FireArrow
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.9974555
-        functionName: FinishAttack
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.9745547
-        functionName: TryContinueQueuedAttack
-        data: 
-        objectReferenceParameter: {fileID: 11500000, guid: 23870fc430416cf4088bfebab248abe9, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
+      events: []
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
@@ -440,7 +591,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -469,7 +620,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

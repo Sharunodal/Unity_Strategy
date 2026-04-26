@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86bce6b3bcdb93440abf827f33d292fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArrowProjectile
-  damage: 10
+  damage: 30
   lifeSeconds: 12
   stickOnHit: 1
   stickDepth: 0.08

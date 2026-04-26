@@ -18,13 +18,13 @@ public class WeaponHitbox : MonoBehaviour
             owner = GetComponentInParent<Unit>();
     }
 
-    public void BeginAttack()
+    public void EnableHitbox()
     {
         active = true;
         hitThisSwing.Clear();
     }
 
-    public void EndAttack()
+    public void DisableHitbox()
     {
         active = false;
     }

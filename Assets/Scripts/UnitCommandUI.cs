@@ -31,7 +31,16 @@ public class UnitCommandUI : MonoBehaviour
             if (receiver != null)
                 receiver.ToggleBlocking();
         }
-}
+    }
+
+    public void OnToggleAutoComboButtonPressed()
+    {
+        foreach (UnitCommandReceiver receiver in selectionManager.GetSelectedCommandReceivers())
+        {
+            if (receiver != null)
+                receiver.ToggleAutoCombo();
+        }
+    }
 
     private void GiveWeaponOrder(WeaponType weaponType)
     {

@@ -33,4 +33,19 @@ public class UnitCommandReceiver : MonoBehaviour
     {
         brain.SetBlockToggled(!brain.GetBlockToggled());
     }
+
+    public void RequestAttack()
+    {
+        brain.RequestAttack();
+    }
+
+    public void SetAutoCombo(bool enabled)
+    {
+        brain.SetAutoComboToggled(enabled);
+    }
+
+    public void ToggleAutoCombo()
+    {
+        brain.SetAutoComboToggled(!brain.GetAutoComboToggled());
+    }
 }

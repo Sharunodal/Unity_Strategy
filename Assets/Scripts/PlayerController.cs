@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
 
     private InputAction toggleRun;
     private InputAction toggleBlock;
+    private InputAction toggleAutoCombo;
     private InputAction additiveSelect;
     private InputAction stopAction;
     private InputAction equipSword;
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
             cam = Camera.main;
         toggleRun = InputSystem.actions.FindAction("Player/ToggleRun", true);
         toggleBlock = InputSystem.actions.FindAction("Player/ToggleBlock", true);
+        toggleAutoCombo = InputSystem.actions.FindAction("Player/ToggleAutoCombo", false);
         additiveSelect = InputSystem.actions.FindAction("Player/AdditiveSelect", true);
         stopAction = InputSystem.actions.FindAction("Player/Stop", true);
         equipSword = InputSystem.actions.FindAction("Player/EquipSword", true);
@@ -36,11 +38,13 @@ public class PlayerController : MonoBehaviour
     {
         toggleRun.Enable();
         toggleBlock.Enable();
+        toggleAutoCombo?.Enable();
         stopAction.Enable();
         equipSword.Enable();
         equipBow.Enable();
         toggleRun.performed += OnToggleRun;
         toggleBlock.performed += OnToggleBlock;
+        toggleAutoCombo.performed += OnToggleAutoCombo;
         stopAction.performed += OnStop;
         equipSword.performed += OnEquipSword;
         equipBow.performed += OnEquipBow;
@@ -51,11 +55,13 @@ public class PlayerController : MonoBehaviour
         equipBow.performed -= OnEquipBow;
         equipSword.performed -= OnEquipSword;
         stopAction.performed -= OnStop;
+        toggleAutoCombo.performed -= OnToggleAutoCombo;
         toggleBlock.performed -= OnToggleBlock;
         toggleRun.performed -= OnToggleRun;
         equipBow.Disable();
         equipSword.Disable();
         stopAction.Disable();
+        toggleAutoCombo?.Disable();
         toggleBlock.Disable();
         toggleRun.Disable();
     }
@@ -119,6 +125,38 @@ public class PlayerController : MonoBehaviour
                 continue;
             brain.SetBlockToggled(newValue);
             Debug.Log($"Set block toggled to {newValue} for unit {u.unitName}");
+        }
+    }
+
+    private void OnToggleAutoCombo(InputAction.CallbackContext context)
+    {
+        bool? current = null;
+        foreach (var s in selection.Selected)
+        {
+            var u = s.GetComponent<Unit>();
+            var brain = s.GetComponent<UnitBrain>();
+            if (u == null || brain == null)
+                continue;
+            if (u.ownerId != localPlayerId)
+                continue;
+            if (current == null)
+                current = brain.GetAutoComboToggled();
+        }
+
+        if (current == null)
+            return;
+
+        bool newValue = !current.Value;
+        foreach (var s in selection.Selected)
+        {
+            var u = s.GetComponent<Unit>();
+            var brain = s.GetComponent<UnitBrain>();
+            if (u == null || brain == null)
+                continue;
+            if (u.ownerId != localPlayerId)
+                continue;
+            brain.SetAutoComboToggled(newValue);
+            Debug.Log($"Set auto combo toggled to {newValue} for unit {u.unitName}");
         }
     }
 

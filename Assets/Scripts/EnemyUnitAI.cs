@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class EnemyUnitAI : MonoBehaviour
@@ -7,6 +6,7 @@ public class EnemyUnitAI : MonoBehaviour
     [SerializeField] private float assistRadius = 12f;
     [SerializeField] private float thinkInterval = 0.25f;
     [SerializeField] private LayerMask unitLayer;
+    [SerializeField] private bool autoComboEnabled = true;
 
     private Unit self;
     private UnitBrain brain;
@@ -23,6 +23,7 @@ public class EnemyUnitAI : MonoBehaviour
     private void OnEnable()
     {
         self.Damaged += OnDamaged;
+        brain.SetAutoComboToggled(autoComboEnabled);
     }
 
     private void OnDisable()
@@ -45,8 +46,7 @@ public class EnemyUnitAI : MonoBehaviour
 
         if (currentTarget == null || currentTarget.currentHitpoints <= 0)
         {
-            currentTarget = attacker;
-            brain.SetCommand(new AttackCommand(currentTarget));
+            EngageTarget(attacker);
         }
 
         Collider[] allies = Physics.OverlapSphere(transform.position, assistRadius, unitLayer);
@@ -73,7 +73,7 @@ public class EnemyUnitAI : MonoBehaviour
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
             if (distanceToTarget <= senseRadius * 1.2f && currentTarget.currentHitpoints > 0)
             {
-                brain.SetCommand(new AttackCommand(currentTarget));
+                EngageTarget(currentTarget);
                 return;
             }
         }
@@ -81,8 +81,19 @@ public class EnemyUnitAI : MonoBehaviour
         currentTarget = FindBestTarget();
         if (currentTarget != null)
         {
-            brain.SetCommand(new AttackCommand(currentTarget));
+            EngageTarget(currentTarget);
         }
+    }
+
+    private void EngageTarget(Unit target)
+    {
+        if (target == null || target.currentHitpoints <= 0 || target.ownerId == self.ownerId)
+            return;
+
+        currentTarget = target;
+
+        if (brain.GetAttackTarget() != target)
+            brain.SetCommand(new AttackCommand(target));
     }
 
     private Unit FindBestTarget()
@@ -126,7 +137,6 @@ public class EnemyUnitAI : MonoBehaviour
         if (activeTarget != null && activeTarget.currentHitpoints > 0)
             return;
 
-        currentTarget = target;
-        brain.SetCommand(new AttackCommand(currentTarget));
+        EngageTarget(target);
     }
 }
