@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private SelectionManager selection;
     [SerializeField] private CommandSystem commands;
 
-    [SerializeField] private int localPlayerId = 0;
+    [SerializeField] private int localPlayerId = FactionRelations.Player1FactionId;
 
     private InputAction toggleRun;
     private InputAction toggleBlock;

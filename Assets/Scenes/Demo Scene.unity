@@ -869,6 +869,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5993455898594071636, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
+      propertyPath: ownerId
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8111167206408523035, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
       propertyPath: unitLayer.m_Bits
       value: 128
@@ -4361,6 +4365,10 @@ PrefabInstance:
       propertyPath: weapon
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 5993455898594071636, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
+      propertyPath: ownerId
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8111167206408523035, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
       propertyPath: unitLayer.m_Bits
       value: 128
@@ -6880,6 +6888,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 458948733975129040, guid: cc2c1cba361d8134fb667dc6f30c5f45, type: 3}
+      propertyPath: ownerId
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 458948733975129040, guid: cc2c1cba361d8134fb667dc6f30c5f45, type: 3}
+      propertyPath: persistentId
+      value: Hero
+      objectReference: {fileID: 0}
     - target: {fileID: 842447808776147431, guid: cc2c1cba361d8134fb667dc6f30c5f45, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -6992,6 +7008,10 @@ PrefabInstance:
     - target: {fileID: 5254117210421570793, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5993455898594071636, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
+      propertyPath: ownerId
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8111167206408523035, guid: c08add5a0fefd314a85def9051f7f416, type: 3}
       propertyPath: unitLayer.m_Bits

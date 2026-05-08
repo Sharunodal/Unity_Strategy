@@ -41,7 +41,7 @@ public class EnemyUnitAI : MonoBehaviour
 
     private void OnDamaged(Unit damagedUnit, Unit attacker)
     {
-        if (attacker == null || attacker.ownerId == self.ownerId || attacker.currentHitpoints <= 0)
+        if (attacker == null || !FactionRelations.AreHostile(self.ownerId, attacker.ownerId) || attacker.currentHitpoints <= 0)
             return;
 
         if (currentTarget == null || currentTarget.currentHitpoints <= 0)
@@ -53,7 +53,7 @@ public class EnemyUnitAI : MonoBehaviour
         foreach (var allyCollider in allies)
         {
             var allyUnit = allyCollider.GetComponent<Unit>();
-            if (allyUnit == null || allyUnit == self || allyUnit.ownerId != self.ownerId)
+            if (allyUnit == null || allyUnit == self || !FactionRelations.AreFriendly(self.ownerId, allyUnit.ownerId))
                 continue;
 
             var allyAI = allyUnit.GetComponent<EnemyUnitAI>();
@@ -87,7 +87,7 @@ public class EnemyUnitAI : MonoBehaviour
 
     private void EngageTarget(Unit target)
     {
-        if (target == null || target.currentHitpoints <= 0 || target.ownerId == self.ownerId)
+        if (target == null || target.currentHitpoints <= 0 || !FactionRelations.AreHostile(self.ownerId, target.ownerId))
             return;
 
         currentTarget = target;
@@ -104,7 +104,7 @@ public class EnemyUnitAI : MonoBehaviour
         foreach (var hit in hits)
         {
             var unit = hit.GetComponent<Unit>();
-            if (unit == null || unit == self || unit.currentHitpoints <= 0 || unit.ownerId == self.ownerId)
+            if (unit == null || unit == self || unit.currentHitpoints <= 0 || !FactionRelations.AreHostile(self.ownerId, unit.ownerId))
                 continue;
 
             float score = ScoreTarget(unit);
@@ -130,7 +130,7 @@ public class EnemyUnitAI : MonoBehaviour
 
     public void TryAssistAgainst(Unit target)
     {
-        if (target == null || target.currentHitpoints <= 0 || target.ownerId == self.ownerId)
+        if (target == null || target.currentHitpoints <= 0 || !FactionRelations.AreHostile(self.ownerId, target.ownerId))
             return;
 
         Unit activeTarget = brain.GetAttackTarget();

@@ -59,7 +59,7 @@ public class WeaponHitbox : MonoBehaviour
 
             hitThisSwing.Add(target);
 
-            if (owner != null && target.ownerId == owner.ownerId)
+            if (owner != null && !FactionRelations.AreHostile(owner.ownerId, target.ownerId))
                 continue;
 
             var block = target.GetComponent<BlockController>();

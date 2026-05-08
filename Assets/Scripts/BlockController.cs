@@ -53,7 +53,7 @@ public class BlockController : MonoBehaviour
         if (!isBlocking)
             return false;
         
-        Vector3 directionToAttacker = (attackerPosition - transform.position);
+        Vector3 directionToAttacker = attackerPosition - transform.position;
         directionToAttacker.y = 0; // Ignore vertical difference
         if (directionToAttacker.sqrMagnitude < 0.0001f)
             return true; // Attacker is at the same position

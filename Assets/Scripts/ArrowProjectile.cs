@@ -50,10 +50,13 @@ public class ArrowProjectile : MonoBehaviour
         if (owner != null && collider.transform.IsChildOf(owner.transform))
             return;
    
-        hasHit = true;
-
         Hurtbox hurtbox = collider.GetComponent<Hurtbox>();
         Unit target = hurtbox != null ? hurtbox.owner : collider.GetComponentInParent<Unit>();
+
+        if (owner != null && target != null && !FactionRelations.AreHostile(owner.ownerId, target.ownerId))
+            return;
+
+        hasHit = true;
 
         // Block check 
         bool blocked = false;
@@ -76,7 +79,8 @@ public class ArrowProjectile : MonoBehaviour
             if (hurtbox != null)
                 finalDamage *= hurtbox.damageMultiplier;
             target.TakeDamage(finalDamage, owner);
-            Debug.Log($"{target.unitName} got hit in {hurtbox.part} for {finalDamage} damage!");
+            string hitPart = hurtbox != null ? hurtbox.part.ToString() : "body";
+            Debug.Log($"{target.unitName} got hit in {hitPart} for {finalDamage} damage!");
         }
 
         Stick(collision);

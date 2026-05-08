@@ -19,7 +19,30 @@ public class CommandSystem : MonoBehaviour
 
     public void IssueFollowOrAttackCommand(SelectionManager selection, Unit clicked, int localPlayerId)
     {
-        bool isFriendly = clicked.ownerId == localPlayerId;
+        if (clicked == null)
+            return;
+
+        RecruitableUnit recruitable = clicked.GetComponent<RecruitableUnit>();
+        if (recruitable != null && recruitable.CanOpenForFaction(localPlayerId))
+        {
+            foreach (var receiver in selection.GetSelectedCommandReceivers())
+            {
+                Unit unit = receiver.GetComponent<Unit>();
+                if (unit == null || unit.ownerId != localPlayerId)
+                    continue;
+
+                receiver.SetCommand(new TalkCommand(clicked, recruitable, localPlayerId, recruitable.ConversationRange));
+                return;
+            }
+
+            return;
+        }
+
+        bool isFriendly = FactionRelations.AreFriendly(localPlayerId, clicked.ownerId);
+        bool isHostile = FactionRelations.AreHostile(localPlayerId, clicked.ownerId);
+
+        if (!isFriendly && !isHostile)
+            return;
 
         foreach (var receiver in selection.GetSelectedCommandReceivers())
         {

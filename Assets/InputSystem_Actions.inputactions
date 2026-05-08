@@ -106,6 +106,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ToggleAutoCombo",
+                    "type": "Button",
+                    "id": "b71c8626-c2d1-49e2-b540-73d70d930280",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "AdditiveSelect",
                     "type": "Button",
                     "id": "0ae5597c-4326-4f64-870c-589d6818b829",
@@ -556,6 +565,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "ToggleRun",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac020d45-a7fe-4171-ba33-e933dcf599bb",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "ToggleAutoCombo",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

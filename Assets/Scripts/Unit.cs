@@ -5,8 +5,10 @@ public enum WeaponType { None, Sword, Bow }
 
 public class Unit : MonoBehaviour
 {
+    [SerializeField] private string persistentId;
+
     public string unitName = "DefaultUnit";
-    public int ownerId = 0;
+    public int ownerId = FactionRelations.Player1FactionId;
     public float currentHitpoints = 100f;
     public float maxHitpoints = 100f;
     public float currentStamina = 100f;
@@ -26,6 +28,7 @@ public class Unit : MonoBehaviour
     [SerializeField] private GameObject bow;
     public WeaponType Weapon => weapon;
     public bool IsRanged => weapon == WeaponType.Bow;
+    public string PersistentId => string.IsNullOrWhiteSpace(persistentId) ? unitName : persistentId;
 
     private void Awake()
     {
@@ -48,6 +51,40 @@ public class Unit : MonoBehaviour
             sword.SetActive(weapon == WeaponType.Sword);
         if (bow)
             bow.SetActive(weapon == WeaponType.Bow);
+    }
+
+    public UnitSaveData CreateSaveData()
+    {
+        return new UnitSaveData(this);
+    }
+
+    public void ApplySaveData(UnitSaveData saveData)
+    {
+        if (saveData == null)
+            return;
+
+        if (!string.IsNullOrWhiteSpace(saveData.persistentId))
+            persistentId = saveData.persistentId;
+
+        unitName = saveData.unitName;
+        ownerId = saveData.ownerId;
+        maxHitpoints = saveData.maxHitpoints;
+        currentHitpoints = Mathf.Clamp(saveData.currentHitpoints, 0f, maxHitpoints);
+        maxStamina = saveData.maxStamina;
+        currentStamina = Mathf.Clamp(saveData.currentStamina, 0f, maxStamina);
+        minStaminaToRun = saveData.minStaminaToRun;
+        maxHunger = saveData.maxHunger;
+        currentHunger = Mathf.Clamp(saveData.currentHunger, 0f, maxHunger);
+        attackDamage = saveData.attackDamage;
+        walkSpeed = saveData.walkSpeed;
+        runSpeed = saveData.runSpeed;
+        EquipWeapon(saveData.weapon, force: true);
+
+        UnitBrain brain = GetComponent<UnitBrain>();
+        if (brain != null)
+            brain.ApplySpeed();
+
+        NotifyStatsChanged();
     }
 
     public void SetHitpoints(float newValue)

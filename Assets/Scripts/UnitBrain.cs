@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum UnitState { Idle, Moving, Attacking, RangeAttacking, Following, Blocking }
+public enum UnitState { Idle, Moving, Attacking, RangeAttacking, Following, Blocking, Talking }
 
 public class UnitBrain : MonoBehaviour
 {
@@ -24,6 +24,11 @@ public class UnitBrain : MonoBehaviour
     private WeaponHitbox weaponHitbox;
     private Unit attackTarget;
     private Unit followTarget;
+    private Unit talkTarget;
+    private RecruitableUnit talkRecruitable;
+    private int talkFactionId;
+    private float talkRange;
+    private bool talkOpened;
 
     private bool runToggled = false;
     private bool blockToggled = false;
@@ -220,6 +225,9 @@ public class UnitBrain : MonoBehaviour
 
         attackTarget = null;
         followTarget = null;
+        talkTarget = null;
+        talkRecruitable = null;
+        talkOpened = false;
 
         if (command is MoveCommand move)
         {
@@ -235,7 +243,7 @@ public class UnitBrain : MonoBehaviour
         {
             attackTarget = attack.Target;
 
-            if (attackTarget == null || attackTarget == self)
+            if (attackTarget == null || attackTarget == self || !FactionRelations.AreHostile(self.ownerId, attackTarget.ownerId))
             {
                 currentCommand = null;
                 attackTarget = null;
@@ -272,6 +280,30 @@ public class UnitBrain : MonoBehaviour
             agent.stoppingDistance = followDistance;
             agent.SetDestination(followTarget.transform.position);
             state = UnitState.Following;
+            return;
+        }
+
+        if (command is TalkCommand talk)
+        {
+            attackRequested = false;
+            talkTarget = talk.Target;
+            talkRecruitable = talk.Recruitable;
+            talkFactionId = talk.FactionId;
+            talkRange = Mathf.Max(0.5f, talk.TalkRange);
+
+            if (talkTarget == null || talkTarget == self || talkRecruitable == null || !talkRecruitable.CanOpenForFaction(talkFactionId))
+            {
+                currentCommand = null;
+                talkTarget = null;
+                talkRecruitable = null;
+                state = UnitState.Idle;
+                return;
+            }
+
+            agent.isStopped = false;
+            agent.stoppingDistance = talkRange;
+            agent.SetDestination(talkTarget.transform.position);
+            state = UnitState.Moving;
             return;
         }
 
@@ -363,6 +395,12 @@ public class UnitBrain : MonoBehaviour
             return;
         }
 
+        if (talkTarget != null)
+        {
+            UpdateTalkCommand();
+            return;
+        }
+
         if (followTarget != null)
         {
             if (followTarget == self)
@@ -384,7 +422,7 @@ public class UnitBrain : MonoBehaviour
 
         if (attackTarget != null)
         {
-            if (attackTarget == self || attackTarget.currentHitpoints <= 0f)
+            if (attackTarget == self || attackTarget.currentHitpoints <= 0f || !FactionRelations.AreHostile(self.ownerId, attackTarget.ownerId))
             {
                 currentCommand = null;
                 attackTarget = null;
@@ -452,6 +490,9 @@ public class UnitBrain : MonoBehaviour
         currentCommand = null;
         attackTarget = null;
         followTarget = null;
+        talkTarget = null;
+        talkRecruitable = null;
+        talkOpened = false;
         attackRequested = false;
 
         // Pending command is not cleared for now, as we want to be able to resume it after blocking
@@ -493,7 +534,7 @@ public class UnitBrain : MonoBehaviour
         if (!attackRequested || self == null)
             return false;
 
-        if (attackTarget == null || attackTarget == self || attackTarget.currentHitpoints <= 0f)
+        if (attackTarget == null || attackTarget == self || attackTarget.currentHitpoints <= 0f || !FactionRelations.AreHostile(self.ownerId, attackTarget.ownerId))
             return false;
 
         bool hasBow = self.IsRanged;
@@ -525,6 +566,64 @@ public class UnitBrain : MonoBehaviour
             return true;
 
         float angle = Vector3.Angle(transform.forward, dir.normalized);
+        return angle <= facingAngle;
+    }
+
+    private void UpdateTalkCommand()
+    {
+        if (talkTarget == null || talkTarget == self || talkTarget.currentHitpoints <= 0f || talkRecruitable == null || (!talkOpened && !talkRecruitable.CanOpenForFaction(talkFactionId)))
+        {
+            currentCommand = null;
+            talkTarget = null;
+            talkRecruitable = null;
+            talkOpened = false;
+            state = UnitState.Idle;
+            return;
+        }
+
+        float distanceToTarget = Vector3.Distance(transform.position, talkTarget.transform.position);
+        if (distanceToTarget > talkRange)
+        {
+            agent.isStopped = false;
+            agent.stoppingDistance = talkRange;
+            agent.SetDestination(talkTarget.transform.position);
+            state = UnitState.Moving;
+            return;
+        }
+
+        agent.isStopped = true;
+        agent.ResetPath();
+
+        UnitBrain targetBrain = talkTarget.GetComponent<UnitBrain>();
+        if (targetBrain != null)
+            targetBrain.StopAll();
+
+        bool playerFacing = RotateTowardsTarget(talkTarget.transform.position, Time.deltaTime, meleeFacingAngle);
+        bool targetFacing = RotateTransformTowards(talkTarget.transform, transform.position, Time.deltaTime, meleeFacingAngle);
+        state = UnitState.Talking;
+
+        if (talkOpened || !playerFacing || !targetFacing)
+            return;
+
+        talkOpened = true;
+        talkRecruitable.OpenConversationForFaction(talkFactionId);
+    }
+
+    private bool RotateTransformTowards(Transform subject, Vector3 targetPos, float dt, float facingAngle)
+    {
+        if (subject == null)
+            return true;
+
+        Vector3 dir = targetPos - subject.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude < 0.0001f)
+            return true;
+
+        Quaternion desired = Quaternion.LookRotation(dir.normalized, Vector3.up);
+        subject.rotation = Quaternion.Slerp(subject.rotation, desired, turnSpeedWhileInCombat * dt);
+
+        float angle = Vector3.Angle(subject.forward, dir.normalized);
         return angle <= facingAngle;
     }
 }
