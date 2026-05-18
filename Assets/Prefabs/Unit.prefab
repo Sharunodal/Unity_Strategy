@@ -220,31 +220,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -19.004965
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.00000041222393
+      value: -0.00000035762787
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.99999905
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071079
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.70710576
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -252,7 +252,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -262,6 +262,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: -4502901282409785108, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b9a4457c90306e42873e672dee1972c, type: 2}
     - target: {fileID: 919132149155446097, guid: dbd6db7b87e63774b992b0de29d9da33, type: 3}
       propertyPath: m_Name
       value: Unit
@@ -387,8 +391,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b53989f827a0824ebe14289b3e8fe94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Unit
+  persistentId: Hero
   unitName: DefaultUnit
-  ownerId: 0
+  ownerId: 1
   currentHitpoints: 100
   maxHitpoints: 100
   currentStamina: 100
@@ -399,6 +404,7 @@ MonoBehaviour:
   attackDamage: 10
   walkSpeed: 3.5
   runSpeed: 7
+  tracker: {fileID: 0}
   weapon: 1
   sword: {fileID: 6662482971452263928}
   bow: {fileID: 5459079356581813841}
@@ -415,15 +421,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitBrain
   meleeRange: 3
-  attacksPerSecond: 1
   followDistance: 1.5
   staminaDrainRunning: 10
   staminaRegen: 5
   turnSpeedWhileInCombat: 12
   meleeFacingAngle: 12
   bowRange: 30
-  shotsPerSecond: 0.8
   bowFacingAngle: 8
+  autoComboToggled: 1
   state: 0
 --- !u!114 &5495528461639648567
 MonoBehaviour:
@@ -450,6 +455,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitAnimator
   animator: {fileID: 7140802740815408943}
+  meleeAttackTrigger: Attack
+  rangedAttackTrigger: ShootBow
+  isAttackingBool: IsAttacking
 --- !u!114 &5153994792563407916
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,6 +471,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CombatAnimationEvents
   weaponHitbox: {fileID: 94906558796814915}
+  unitAnimator: {fileID: 0}
+  unitBrain: {fileID: 0}
 --- !u!114 &5282702135046479920
 MonoBehaviour:
   m_ObjectHideFlags: 0

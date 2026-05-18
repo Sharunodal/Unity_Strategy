@@ -23,16 +23,28 @@ public class Unit : MonoBehaviour
     public event Action statsChanged;
     public event Action<Unit, Unit> Damaged;
 
+    [SerializeField] private FactionUnitTracker tracker;
     [SerializeField] private WeaponType weapon = WeaponType.Sword;
     [SerializeField] private GameObject sword;
     [SerializeField] private GameObject bow;
     public WeaponType Weapon => weapon;
     public bool IsRanged => weapon == WeaponType.Bow;
     public string PersistentId => string.IsNullOrWhiteSpace(persistentId) ? unitName : persistentId;
+    private bool registeredWithTracker;
 
     private void Awake()
     {
         EquipWeapon(weapon, force: true);
+    }
+
+    private void OnEnable()
+    {
+        RegisterWithTracker();
+    }
+
+    private void OnDestroy()
+    {
+        UnregisterFromTracker();
     }
 
     private void NotifyStatsChanged()
@@ -67,7 +79,7 @@ public class Unit : MonoBehaviour
             persistentId = saveData.persistentId;
 
         unitName = saveData.unitName;
-        ownerId = saveData.ownerId;
+        SetOwnerId(saveData.ownerId);
         maxHitpoints = saveData.maxHitpoints;
         currentHitpoints = Mathf.Clamp(saveData.currentHitpoints, 0f, maxHitpoints);
         maxStamina = saveData.maxStamina;
@@ -95,6 +107,34 @@ public class Unit : MonoBehaviour
 
         currentHitpoints = clamped;
         NotifyStatsChanged();
+    }
+
+    public void SetOwnerId(int newOwnerId)
+    {
+        newOwnerId = FactionRelations.UpgradeLegacyPlayerFactionId(newOwnerId);
+
+        if (ownerId == newOwnerId)
+            return;
+
+        ownerId = newOwnerId;
+
+        if (registeredWithTracker && tracker != null)
+            tracker.ChangeUnitFaction(this, ownerId);
+
+        NotifyStatsChanged();
+    }
+
+    public void SetTracker(FactionUnitTracker newTracker)
+    {
+        if (tracker == newTracker)
+        {
+            RegisterWithTracker();
+            return;
+        }
+
+        UnregisterFromTracker();
+        tracker = newTracker;
+        RegisterWithTracker();
     }
 
     public void SetStamina(float newValue)
@@ -133,6 +173,28 @@ public class Unit : MonoBehaviour
 
     private void GetKnockedOut()
     {
+        UnregisterFromTracker();
         Destroy(gameObject);
+    }
+
+    private void RegisterWithTracker()
+    {
+        if (registeredWithTracker || currentHitpoints <= 0f)
+            return;
+
+        if (tracker == null)
+            return;
+
+        tracker.RegisterUnit(this);
+        registeredWithTracker = true;
+    }
+
+    private void UnregisterFromTracker()
+    {
+        if (!registeredWithTracker || tracker == null)
+            return;
+
+        tracker.UnregisterUnit(this);
+        registeredWithTracker = false;
     }
 }

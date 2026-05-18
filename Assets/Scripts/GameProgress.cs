@@ -205,29 +205,6 @@ public class GameProgress : MonoBehaviour
         SavePlayerUnits(unitsToSave);
     }
 
-    public void ApplySavedUnitsToScene(int playerFactionId)
-    {
-        if (!HasSavedUnits())
-            return;
-
-        Unit[] sceneUnits = FindObjectsByType<Unit>(FindObjectsInactive.Exclude);
-        HashSet<Unit> restoredUnits = new();
-
-        foreach (UnitSaveData saveData in savedPlayerUnits)
-        {
-            Unit matchingUnit = FindMatchingSceneUnit(saveData, sceneUnits, restoredUnits);
-            if (matchingUnit == null)
-            {
-                Debug.LogWarning($"No scene unit found for saved unit '{saveData.persistentId}'. Add a matching persistent id in this scene if this unit should appear here.");
-                continue;
-            }
-
-            matchingUnit.ApplySaveData(saveData);
-            matchingUnit.ownerId = playerFactionId;
-            restoredUnits.Add(matchingUnit);
-        }
-    }
-
     public bool HasSavedUnits()
     {
         return savedPlayerUnits.Count > 0;
@@ -249,19 +226,5 @@ public class GameProgress : MonoBehaviour
         }
 
         savedPlayerUnits.Add(newSaveData);
-    }
-
-    private Unit FindMatchingSceneUnit(UnitSaveData saveData, Unit[] sceneUnits, HashSet<Unit> restoredUnits)
-    {
-        foreach (Unit unit in sceneUnits)
-        {
-            if (unit == null || restoredUnits.Contains(unit))
-                continue;
-
-            if (saveData.Matches(unit))
-                return unit;
-        }
-
-        return null;
     }
 }

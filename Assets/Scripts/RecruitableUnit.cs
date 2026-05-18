@@ -198,7 +198,7 @@ public class RecruitableUnit : MonoBehaviour
         if (recruit == null || recruit.currentHitpoints <= 0f)
             return false;
 
-        recruit.ownerId = factionId;
+        recruit.SetOwnerId(factionId);
         progress.RegisterOrUpdatePlayerUnit(recruit);
 
         EnemyUnitAI enemyAI = recruit.GetComponent<EnemyUnitAI>();

@@ -9,7 +9,13 @@ public class SelectionManager : MonoBehaviour
     private readonly List<Selectable> selected = new();
     public IReadOnlyList<Selectable> Selected => selected;
 
+    // Clears the selection and optionally notifies listeners.
     public void ClearSelection()
+    {
+        ClearSelection(true);
+    }
+
+    private void ClearSelection(bool notify)
     {
         for (int i = selected.Count - 1; i >= 0; i--)
         {
@@ -21,7 +27,9 @@ public class SelectionManager : MonoBehaviour
             }
             selected.RemoveAt(i);
         }
-        SelectionChanged?.Invoke();
+
+        if (notify)
+            SelectionChanged?.Invoke();
     }
 
     public void SelectSingle(Selectable selectable, bool additive)
@@ -29,7 +37,7 @@ public class SelectionManager : MonoBehaviour
         if (selectable == null) return;
 
         if (!additive)
-            ClearSelection();
+            ClearSelection(false);
 
         if (!selected.Contains(selectable))
         {
@@ -38,6 +46,28 @@ public class SelectionManager : MonoBehaviour
             selectable.SetSelection(true);
             SelectionChanged?.Invoke();
         }
+    }
+
+    public void SelectMultiple(IEnumerable<Selectable> selectables, bool additive)
+    {
+        if (!additive)
+            ClearSelection(false);
+
+        bool changed = !additive;
+
+        foreach (Selectable selectable in selectables)
+        {
+            if (selectable == null || selected.Contains(selectable))
+                continue;
+
+            selected.Add(selectable);
+            selectable.Destroyed += OnSelectableDestroyed;
+            selectable.SetSelection(true);
+            changed = true;
+        }
+
+        if (changed)
+            SelectionChanged?.Invoke();
     }
 
     private void OnSelectableDestroyed(Selectable selectable)

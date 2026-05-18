@@ -5,14 +5,15 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Collider))]
 public class StageExitTrigger : MonoBehaviour
 {
+    [SerializeField] private FactionUnitTracker unitTracker;
     [SerializeField] private string nextSceneName = "Stage 2";
     [SerializeField] private int nextStageNumber = 2;
-    [SerializeField] private int playerFactionId = FactionRelations.Player1FactionId;
     [SerializeField] private bool requiresObjectiveComplete = true;
     [SerializeField] private bool objectiveComplete = true;
     [SerializeField] private bool requireAllLivingPlayerUnitsInside = false;
     [SerializeField] private int requiredPlayerUnitsInside = 1;
-
+    
+    private int playerFactionId = FactionRelations.Player1FactionId;
     private readonly HashSet<Unit> playerUnitsInside = new();
     private bool loading;
 
@@ -25,12 +26,6 @@ public class StageExitTrigger : MonoBehaviour
     {
         objectiveComplete = complete;
         TryLoadNextStage();
-    }
-
-    private void Reset()
-    {
-        Collider triggerCollider = GetComponent<Collider>();
-        triggerCollider.isTrigger = true;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -70,7 +65,7 @@ public class StageExitTrigger : MonoBehaviour
 
         int neededUnits = requiredPlayerUnitsInside;
         if (requireAllLivingPlayerUnitsInside)
-            neededUnits = CountLivingPlayerUnitsInScene();
+            neededUnits = GetLivingPlayerUnitCount();
 
         if (playerUnitsInside.Count < Mathf.Max(1, neededUnits))
             return;
@@ -84,18 +79,12 @@ public class StageExitTrigger : MonoBehaviour
         SceneManager.LoadScene(nextSceneName);
     }
 
-    private int CountLivingPlayerUnitsInScene()
+    private int GetLivingPlayerUnitCount()
     {
-        int count = 0;
-        Unit[] units = FindObjectsByType<Unit>(FindObjectsInactive.Exclude);
+        if (unitTracker != null)
+            return unitTracker.GetLivingUnitCount(playerFactionId);
 
-        foreach (Unit unit in units)
-        {
-            if (unit != null && unit.ownerId == playerFactionId && unit.currentHitpoints > 0f)
-                count++;
-        }
-
-        return count;
+        return requiredPlayerUnitsInside;
     }
 
     private void RemoveDestroyedUnits()

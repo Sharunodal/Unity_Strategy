@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private SelectionManager selectionManager;
     [SerializeField] private GameObject unitStatsPanel;
     [SerializeField] private GameObject pauseScreen;
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private string firstSceneName = "Stage 1";
     [SerializeField] private TMPro.TextMeshProUGUI nameText;
     [SerializeField] private TMPro.TextMeshProUGUI hitpointsText;
     [SerializeField] private TMPro.TextMeshProUGUI staminaText;
@@ -19,6 +22,7 @@ public class GameManager : MonoBehaviour
 
     public bool isGameActive = true;
     public bool paused = false;
+    public bool gameOver = false;
 
     private void Awake()
     {
@@ -27,15 +31,29 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1f;
+        paused = false;
+        isGameActive = true;
+        gameOver = false;
+
+        if (pauseScreen)
+            pauseScreen.SetActive(false);
+        if (gameOverScreen)
+            gameOverScreen.SetActive(false);
+
         RefreshSelection();
     }
 
     private void OnEnable()
     {
-        pauseAction.Enable();
-        pauseAction.performed += OnPausePerformed;
+        if (pauseAction != null)
+        {
+            pauseAction.Enable();
+            pauseAction.performed += OnPausePerformed;
+        }
 
-        selectionManager.SelectionChanged += RefreshSelection;
+        if (selectionManager)
+            selectionManager.SelectionChanged += RefreshSelection;
         RefreshSelection();
     }
 
@@ -45,8 +63,11 @@ public class GameManager : MonoBehaviour
             selectionManager.SelectionChanged -= RefreshSelection;
         SetObservedUnit(null);
 
-        pauseAction.performed -= OnPausePerformed;
-        pauseAction.Disable();
+        if (pauseAction != null)
+        {
+            pauseAction.performed -= OnPausePerformed;
+            pauseAction.Disable();
+        }
     }
 
     private void OnPausePerformed(InputAction.CallbackContext context)
@@ -62,15 +83,62 @@ public class GameManager : MonoBehaviour
         if (!paused)
         {
             paused = true;
-            pauseScreen.SetActive(true);
+            if (pauseScreen)
+                pauseScreen.SetActive(true);
             Time.timeScale = 0f;
         }
         else
         {
             paused = false;
-            pauseScreen.SetActive(false);
+            if (pauseScreen)
+                pauseScreen.SetActive(false);
             Time.timeScale = 1f;
         }
+    }
+
+    public void ShowGameOver()
+    {
+        isGameActive = false;
+        paused = false;
+        gameOver = true;
+
+        if (pauseScreen)
+            pauseScreen.SetActive(false);
+        if (gameOverScreen)
+            gameOverScreen.SetActive(true);
+
+        Time.timeScale = 0f;
+    }
+
+    public void RestartGameFromBeginning()
+    {
+        GameProgress.GetOrCreate().ResetProgress();
+        LoadSceneFromNormalTime(firstSceneName);
+    }
+
+    public void RetryCurrentStage()
+    {
+        LoadSceneFromNormalTime(SceneManager.GetActiveScene().name);
+    }
+
+    private void LoadSceneFromNormalTime(string sceneName)
+    {
+        isGameActive = true;
+        paused = false;
+        Time.timeScale = 1f;
+
+        if (pauseScreen)
+            pauseScreen.SetActive(false);
+        if (gameOverScreen)
+            gameOverScreen.SetActive(false);
+
+        if (!string.IsNullOrWhiteSpace(sceneName))
+        {
+            SceneManager.LoadScene(sceneName);
+            return;
+        }
+
+        SceneManager.LoadScene(0);
     }
 
     private void SetObservedUnit(Unit unit)
